@@ -114,3 +114,22 @@ willy@Hitagi ankya$ nc -l 31337 > mtd5
 willy@Hitagi ankya$ nc -l 31337 > mtd6
 willy@Hitagi ankya$ nc -l 31337 > mtd7
 ```
+
+Filesystem layout
+
+```
+[root@anyka ~]$ mount
+rootfs on / type rootfs (rw)
+/dev/root on / type squashfs (ro,relatime)
+devtmpfs on /dev type devtmpfs (rw,relatime,mode=0755)
+proc on /proc type proc (rw,relatime)
+tmpfs on /tmp type tmpfs (rw,relatime)
+tmpfs on /var type tmpfs (rw,relatime)
+devpts on /dev/pts type devpts (rw,relatime,mode=600,ptmxmode=000)
+tmpfs on /mnt type tmpfs (rw,relatime)
+sysfs on /sys type sysfs (rw,relatime)
+/dev/mtdblock5 on /usr type squashfs (ro,relatime)
+/dev/mtdblock6 on /etc/jffs2 type jffs2 (rw,relatime)
+/dev/mtdblock7 on /data type jffs2 (rw,relatime)
+/dev/loop0 on /tmp/ramdisk type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=cp437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro)
+```
