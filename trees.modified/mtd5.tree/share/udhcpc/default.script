@@ -1,0 +1,81 @@
+#!/bin/sh
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+
+RESOLV_CONF="/etc/jffs2/resolv.conf"
+
+update_interface()
+{
+  [ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
+  [ -n "$subnet" ] && NETMASK="netmask $subnet"
+  /sbin/ifconfig $interface $ip $BROADCAST $NETMASK
+}
+
+update_routes()
+{
+  if [ -n "$router" ]
+  then
+    echo "deleting routes"
+    while /sbin/route del default gw 0.0.0.0 dev $interface
+    do :
+    done
+
+    for i in $router
+    do
+      echo "add gw $i"
+      /sbin/route add default gw $i dev $interface
+      echo "$i" > "/tmp/gw0"
+    done
+  fi
+}
+
+update_dns()
+{
+  echo -n > $RESOLV_CONF
+  [ -n "$domain" ] && echo domain $domain >> $RESOLV_CONF
+  for i in $dns
+  do
+    echo adding dns $i
+    echo nameserver $i >> $RESOLV_CONF
+  done
+  echo "Add other dns addr"
+  grep "8.8.8.8" $RESOLV_CONF || echo nameserver "8.8.8.8" >> $RESOLV_CONF
+  grep "8.208.8.243" $RESOLV_CONF || echo nameserver "8.208.8.243" >> $RESOLV_CONF
+  grep "47.89.253.148" $RESOLV_CONF || echo nameserver "47.89.253.148" >> $RESOLV_CONF
+  grep "47.74.247.115" $RESOLV_CONF || echo nameserver "47.74.247.115" >> $RESOLV_CONF
+  grep "47.104.92.112" $RESOLV_CONF || echo nameserver "47.104.92.112" >> $RESOLV_CONF
+  grep "106.15.57.250" $RESOLV_CONF || echo nameserver "106.15.57.250" >> $RESOLV_CONF
+  grep "202.96.209.133" $RESOLV_CONF || echo nameserver "202.96.209.133" >> $RESOLV_CONF
+  grep "202.96.209.5" $RESOLV_CONF || echo nameserver "202.96.209.5" >> $RESOLV_CONF
+}
+
+deconfig()
+{
+  /sbin/ifconfig $interface 0.0.0.0
+}
+
+case "$1" in
+  bound)
+    update_interface;
+    update_routes;
+    update_dns;
+  ;;
+
+  renew)
+    update_interface;
+    update_routes;
+    update_dns;
+  ;;
+
+  deconfig)
+    deconfig;
+  ;;
+
+  *)
+    echo "Usage: $0 {bound|renew|deconfig}"
+    exit 1
+    ;;
+esac
+
+exit 0
+
